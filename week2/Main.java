@@ -185,53 +185,46 @@ class Mtx {
         System.out.println(Arrays.deepToString(arr));
     }
 
+    /**
+     * https://algodaily.com/challenges/traverse-a-matrix-in-spiral-order
+     */
     public static void traverseRectangle(Integer[][] mtx, Integer cur_num) {
-        int right = mtx[0].length - 1;
+        int right = mtx[0].length;
         int bottom = mtx.length - 1;
         if (right == 0 || bottom == 0) {
             // recursion base case
             mtx[0][0] = cur_num;
             return;
         }
-        int top = 0;
-        int left = 0;
-       //  System.out.printf("%d %d %d %d\n", left, right, top, bottom);
 
-        while (left < right) {
-            System.out.printf("at the beginning: %d  %d %d %d\n ", left, right, top, bottom);
-            System.out.println(Arrays.deepToString(mtx));
-            for (; left < right; left++) {
-                mtx[top][left] = cur_num;
+        int[][] dirs = new int[][] { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+        int[] scope = new int[] {right, bottom};
+
+        int offset = 0;
+        int row = 0;
+        int col = -1; // as we also need to assign sth to the first num
+                      // and we start assign after first increment of the indexes
+        while (scope[offset % 2] > 0) {
+            for (int i = 0; i < scope[offset % 2]; i++) {
+                row += dirs[offset][0];
+                col += dirs[offset][1];
+                mtx[row][col] = cur_num;
                 cur_num++;
             }
+            // make the matrices bounds smaller for one row/col
+            scope[offset % 2]--;
 
-            for (; top <= bottom; top++) {
-                mtx[top][left] = cur_num;
-                cur_num++;
-            }
-
-            top--; // as we increment it in the loop
-            left--;
-            for (; left >= 0; left--) {
-                mtx[top][left] = cur_num;
-                cur_num++;
-            }
-
-            left++;
-            for (; top > 0; top--) {
-                mtx[top][left] = cur_num;
-                cur_num++;
-            }
-
-            // make the bounds smaller
-            // why on earth does the recursion not work???
-            left++;
-            right--;
-            top++;
-            bottom--;
+            // determines whether row or column is processed (will be
+            // passed to scope[idx % 2] later on, where scope
+            // determines out matrix bounds)
+            offset = (offset + 1) % 4;
         }
     }
 
+    /**
+     * Possible solution via recursion: traverse only a rectangel and
+     * then recursively make the matrix smaller
+     */
     public static Integer[][] submtx(Integer[][] mtx) {
         // copyOfRange conducts shallow copy if applied to wrapper
         Integer[][]res = Arrays.copyOfRange(mtx, 1, mtx.length - 1);
@@ -254,39 +247,37 @@ class MtxTranspose {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int n_x = scanner.nextInt();
         int n_y = scanner.nextInt();
+        int n_x = scanner.nextInt();
 
-        Integer[][] mtx = createMatrix(n_x, n_y);
-
-        System.out.println(Arrays.deepToString(mtx));
-        simpleRotate(mtx);
-        System.out.println(Arrays.deepToString(mtx));
-    }
-
-    public static Integer[][] createMatrix(int n_x, int n_y) {
-        Integer[][] mtx = new Integer[n_x][n_y];
-        int cur_num = 1;
-        for (int i = 0; i < n_x; i++) {
-            for (int j = 0; j < n_y; j++) {
-                mtx[i][j] = cur_num;
-                cur_num++;
+        Integer[][] mtx = new Integer[n_y][n_x];
+        for (int i = 0; i < n_y; i++) {
+            for (int j = 0; j < n_x; j++) {
+                mtx[i][j] = scanner.nextInt();
             }
         }
+        System.out.println(Arrays.deepToString(mtx));
+        mtx = rotate(mtx);
+        System.out.println(Arrays.deepToString(mtx));
 
-        return mtx;
     }
 
-    public static void simpleRotate(Integer[][] mtx) {
-        int size = mtx.length;
-        for (int i = 0; i < size / 2; i++) {
-            for (int j = 0; j < size - i - 1; j++) {
-                int temp = mtx[i][j];
-                mtx[i][j] = mtx[size - 1 - j][i];
-                mtx[size - 1 - j][i] = mtx[size - 1 - i][size - 1 - j];
-                mtx[size - 1 - i][size - 1 - j] = mtx[j][size - 1 - i];
-                mtx[j][size - 1 - i] = temp;
+    public static Integer[][] rotate(Integer[][] mtx) {
+        int n_y = mtx.length;
+        int n_x = mtx[0].length;
+        int col = 0;
+        int row = 0;
+
+        Integer[][] new_mtx = new Integer[n_x][n_y];
+        for (int x = 0; x < n_x; x++) {
+            col = 0;
+            for (int y = n_y - 1; y >= 0; y--) {
+                new_mtx[row][col] = mtx[y][x];
+                col++;
             }
+            row++;
         }
+
+        return new_mtx;
     }
 }
