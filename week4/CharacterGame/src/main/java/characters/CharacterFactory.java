@@ -16,6 +16,7 @@ public class CharacterFactory {
         Reflections reflections = new Reflections("characters");
         Set<Class<? extends Character>> characters = reflections.getSubTypesOf(Character.class);
         List<Class<? extends Character>> charactersClasses = new ArrayList<>(characters);
+
         return charactersClasses.get(new Random().nextInt(characters.size())).newInstance();
     }
 }

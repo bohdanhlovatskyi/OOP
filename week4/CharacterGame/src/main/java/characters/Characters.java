@@ -81,12 +81,8 @@ class King extends Character {
         if (this.getClass().equals(c.getClass())) {
             return;
         }
-        try {
-            c.setHp(c.getHp() - random.nextInt(c.getPower()));
-        } catch (Exception ex) {
-            System.out.println(String.format("[DEBUG]: %s\n", ex.toString()));
-            return;
-        }
+
+        c.setHp(c.getHp() - random.nextInt(this.getPower()));
     }
 }
 
